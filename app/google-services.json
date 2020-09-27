@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1085224851321",
+    "firebase_url": "https://voicemailsystem-bb13a.firebaseio.com",
+    "project_id": "voicemailsystem-bb13a",
+    "storage_bucket": "voicemailsystem-bb13a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085224851321:android:8042ac04ffa716485cc1a8",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085224851321-gm6a58sgm4s3n1cfjm6bs8jk4i7ob998.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCe-pIz6UskWrJeyYtPyqPFjsTX2i74eis"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085224851321-gm6a58sgm4s3n1cfjm6bs8jk4i7ob998.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
