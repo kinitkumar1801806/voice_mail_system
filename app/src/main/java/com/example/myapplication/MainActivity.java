@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                                             public void onComplete(@NonNull Task<Void> task) {
                                              progressBar.setVisibility(View.GONE);
                                              Intent intent=new Intent(MainActivity.this,Add_Reciever.class);
-                                             intent.putExtra("email",email1);
+                                             intent.putExtra("uid",userId);
                                              startActivity(intent);
                                             }
                                         });

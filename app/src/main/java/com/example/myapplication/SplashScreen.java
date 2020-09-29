@@ -61,7 +61,7 @@ public FirebaseAuth mAuth;
                                 {
                                     Intent intent=new Intent(SplashScreen.this,Add_Reciever.class);
                                     String email=(String)userData.get("email");
-                                    intent.putExtra("phone",email);
+                                    intent.putExtra("uid",uid);
                                     startActivity(intent);
                                     SplashScreen.this.finish();
                                 }
