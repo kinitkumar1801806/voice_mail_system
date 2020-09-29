@@ -32,6 +32,10 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull GroupAdapter.ViewHolder holder, int position) {
+        String title= Groups.get(position);
+        holder.show_message.setText(title);
+
+
 
     }
 
@@ -45,6 +49,8 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
         public ImageView profile_image,image;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            profile_image=(ImageView)itemView.findViewById(R.id.imageIcon);
+            show_message=(TextView)itemView.findViewById(R.id.email);
 
         }
     }
