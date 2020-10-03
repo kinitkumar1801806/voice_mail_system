@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="#EFEFEF"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Do you want to delete this group?"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:textSize="18sp"
+        />
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="70dp"
+        android:layout_marginRight="32dp"
+        android:text="Yes"
+        android:layout_marginBottom="20dp"
+        android:textColor="@android:color/white"
+        android:background="@drawable/btn_bg"/>
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="70dp"
+        android:layout_marginLeft="32dp"
+        android:text="No"
+        android:textColor="@android:color/white"
+        android:background="@drawable/btn_cancel"
+        android:layout_marginBottom="20dp"/>
+
+</RelativeLayout>

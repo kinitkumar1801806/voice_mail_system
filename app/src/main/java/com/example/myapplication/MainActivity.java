@@ -1,15 +1,22 @@
 package com.example.myapplication;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myapplication.Model.UserInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,11 +30,57 @@ import java.util.regex.Pattern;
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private String userId;
+    private int MULTIPLE_PERMISSION = 1;
+    String[] permission={Manifest.permission.RECORD_AUDIO};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
+        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO )== PackageManager.PERMISSION_GRANTED)
+        {
+
+        }
+        else {
+            requestPhonePermission();
+        }
+    }
+    private void requestPhonePermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.RECORD_AUDIO)){
+            new AlertDialog.Builder(this)
+                    .setTitle("Permission needed")
+                    .setMessage("This permission is needed because of this and that")
+                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(MainActivity.this,
+                                    permission, MULTIPLE_PERMISSION);
+                        }
+
+                    })
+                    .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create().show();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    permission,MULTIPLE_PERMISSION);
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MULTIPLE_PERMISSION)  {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+
+            } else {
+                Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
     private boolean isValidEmailId(String email){
 
@@ -84,6 +137,8 @@ public class MainActivity extends AppCompatActivity {
                                              progressBar.setVisibility(View.GONE);
                                              Intent intent=new Intent(MainActivity.this,Add_Reciever.class);
                                              intent.putExtra("uid",userId);
+                                             intent.putExtra("email",email1);
+                                             intent.putExtra("pass",pass1);
                                              startActivity(intent);
                                             }
                                         });
