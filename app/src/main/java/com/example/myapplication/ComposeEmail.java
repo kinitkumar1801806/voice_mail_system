@@ -6,8 +6,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,19 +23,29 @@ import android.provider.OpenableColumns;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.myapplication.Adapter.AttachAdapter;
+import com.example.myapplication.Adapter.GroupAdapter;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class ComposeEmail extends AppCompatActivity {
@@ -44,12 +57,23 @@ public class ComposeEmail extends AppCompatActivity {
     EditText Subject,Body;
     ImageView sub_mic,body_mic;
     private int MULTIPLE_PERMISSION = 1;
+    RecyclerView recyclerView;
+    Animation slideUp,slideDown;
+    ProgressDialog progressDialog;
+    ArrayList<String> Attach_List;
+    AttachAdapter attachAdapter;
+    ImageView Docs,Images;
     String[] permission={Manifest.permission.RECORD_AUDIO};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compose_email);
         Intent intent=getIntent();
+        Attach_List=new ArrayList<>();
+        Docs=findViewById(R.id.docs);
+        Images=findViewById(R.id.images);
+        slideUp = AnimationUtils.loadAnimation(this, R.anim.silde_up);
+        slideDown = AnimationUtils.loadAnimation(this, R.anim.slide_down);
         uid=intent.getStringExtra("uid");
         Email=intent.getStringExtra("email");
         Pass=intent.getStringExtra("pass");
@@ -60,6 +84,13 @@ public class ComposeEmail extends AppCompatActivity {
         else {
             requestPhonePermission();
         }
+        recyclerView=findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        progressDialog =new ProgressDialog(this);
+        progressDialog.setContentView(R.layout.progress_dialogue);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         speechRecognizer= SpeechRecognizer.createSpeechRecognizer(this);
         speechRecognizer1= SpeechRecognizer.createSpeechRecognizer(this);
         Subject=findViewById(R.id.subject);
@@ -253,11 +284,7 @@ public class ComposeEmail extends AppCompatActivity {
     }
 
     public void attach(View view) {
-        ImageView Docs,Images;
-        Docs=findViewById(R.id.docs);
-        Images=findViewById(R.id.images);
-        Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.silde_up);
-        Animation slideDown = AnimationUtils.loadAnimation(this, R.anim.slide_down);
+
         if(Docs.getVisibility()==view.VISIBLE&&Images.getVisibility()==view.VISIBLE)
         {
             Docs.setVisibility(view.GONE);
@@ -282,12 +309,16 @@ public class ComposeEmail extends AppCompatActivity {
     }
     protected void onActivityResult(int requestCode, int resultCode,@Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        String displayName = null;
+        Docs.setVisibility(View.GONE);
+        Images.setVisibility(View.GONE);
+        Docs.startAnimation(slideDown);
+        Images.startAnimation(slideDown);
         if (requestCode == pic_image && resultCode == RESULT_OK ) {
             Uri uri = data.getData();
             String uriString = uri.toString();
             File myFile = new File(uriString);
             String path = myFile.getAbsolutePath();
-            String displayName = null;
 
             if (uriString.startsWith("content://")) {
                 Cursor cursor = null;
@@ -302,8 +333,6 @@ public class ComposeEmail extends AppCompatActivity {
             } else if (uriString.startsWith("file://")) {
                 displayName = myFile.getName();
             }
-            System.out.println(displayName);
-
         }
         else if(requestCode==pic_file&&resultCode==RESULT_OK)
         {
@@ -311,7 +340,6 @@ public class ComposeEmail extends AppCompatActivity {
             String uriString = uri.toString();
             File myFile = new File(uriString);
             String path = myFile.getAbsolutePath();
-            String displayName = null;
 
             if (uriString.startsWith("content://")) {
                 Cursor cursor = null;
@@ -326,8 +354,33 @@ public class ComposeEmail extends AppCompatActivity {
             } else if (uriString.startsWith("file://")) {
                 displayName = myFile.getName();
             }
-            System.out.println(displayName);
         }
+        Attach_List.add(displayName);
+        if(Attach_List.size()==1)
+        {
+            attachAdapter =new AttachAdapter(ComposeEmail.this,Attach_List);
+            recyclerView.setAdapter(attachAdapter);
+            progressDialog.dismiss();
+            attachAdapter.setOnItemClickListener(new AttachAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(int position) {
+
+                }
+
+                @Override
+                public void removeItem(final int position) {
+                Attach_List.remove(position);
+                attachAdapter.notifyItemRemoved(position);
+                }
+
+            });
+        }
+        else
+        {
+            attachAdapter.notifyItemRangeChanged(0,Attach_List.size());
+            attachAdapter.notifyDataSetChanged();
+        }
+
     }
 
     public void add_docs(View view) {
